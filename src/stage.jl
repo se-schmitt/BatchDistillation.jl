@@ -1,6 +1,6 @@
 # Stage - one equilibrium tray. PH-flash drives equilibrium; soft-drained
 # liquid holdup approaches HL_target; vapor leaves fast via τ_V ≪ τ_L.
-function Stage(; name, fluid, f_holdup)
+function Stage(; name, fluid)
     N = length(fluid)
 
     @named L_in  = MaterialStream()
@@ -18,6 +18,9 @@ function Stage(; name, fluid, f_holdup)
 
     pars = @parameters begin
         p
+        n_ref = 0.042
+        B_ref = 5/3600
+        h = 1.0
     end
 
     _T, _y = wrapper_bubble_temperature(fluid, p, x)
@@ -44,7 +47,7 @@ function Stage(; name, fluid, f_holdup)
         # eq. 13
         H ~ nL * enthalpy(fluid, p, T, x; phase=:liquid),
         # eq. 14
-        nL ~ f_holdup(L_in.n)
+        nL ~ n_ref / B_ref * h * L_in.n
     ]
     
     return compose(ODESystem(eqs, t, sts, pars; name), [L_in, L_out, V_in, V_out])

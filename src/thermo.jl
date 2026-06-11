@@ -13,7 +13,7 @@ function _ph_flash(fluid, p, h, n)
         return [T, nL..., nV...]
     end
 end
-@register_array_symbolic _ph_flash(fluid, p, h, n) begin 
+@register_array_symbolic _ph_flash(fluid, p, h, n::AbstractVector) begin 
     size=(1+2*length(model),)
     eltype=Base.promote_eltype(p, h, n)
 end
@@ -28,12 +28,12 @@ function wrapper_ph_flash(fluid, p, h, n)
 end
 
 # bubble temperature
-function _bubble_temperature(model, p, x)
-    T, _, _, y = bubble_temperature(model, p, x)
+function _bubble_temperature(fluid, p, x)
+    T, _, _, y = bubble_temperature(fluid, p, x)
     return [T, y...] 
 end
-@register_array_symbolic _bubble_temperature(fluid, p, x) begin 
-    size=(1+length(model),)
+@register_array_symbolic _bubble_temperature(fluid::Clapeyron.EoSModel, p::Number, x::AbstractVector) begin 
+    size=(1+length(x),)
     eltype=Base.promote_eltype(p, x)
 end
 

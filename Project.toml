@@ -2,3 +2,13 @@ name = "BatchDistillation"
 uuid = "1c514aaa-0bb0-4687-90b3-463ccf1688ea"
 version = "0.1.0"
 authors = ["Sebastian Schmitt <se.s.schmitt@gmail.com>"]
+
+[deps]
+Clapeyron = "7c7805af-46cc-48c9-995b-ed0ed2dc909a"
+ModelingToolkit = "961ee093-0014-501f-94e3-6117800e7a78"
+OrdinaryDiffEq = "1dea7af3-3e70-54e6-95c3-0bf5283fa5ed"
+
+[compat]
+Clapeyron = "0.6.25"
+ModelingToolkit = "11.26.8"
+OrdinaryDiffEq = "7.0.0"
