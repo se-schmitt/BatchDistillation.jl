@@ -1,0 +1,4 @@
+name = "BatchDistillation"
+uuid = "1c514aaa-0bb0-4687-90b3-463ccf1688ea"
+version = "0.1.0"
+authors = ["Sebastian Schmitt <se.s.schmitt@gmail.com>"]
