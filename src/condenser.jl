@@ -1,9 +1,9 @@
 function CondenserBuffer(; name, fluid)
     N = length(fluid)
 
-    @named V_in = MaterialStream()
-    @named L_back = MaterialStream()
-    @named L_dist = MaterialStream()
+    @named V_in = MaterialStream(; N)
+    @named L_back = MaterialStream(; N)
+    @named L_dist = MaterialStream(; N)
 
     sts = @variables begin
         xB(t)[1:N]      # mole fraction buffer

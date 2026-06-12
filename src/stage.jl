@@ -3,10 +3,10 @@
 function Stage(; name, fluid)
     N = length(fluid)
 
-    @named L_in  = MaterialStream()
-    @named L_out = MaterialStream()
-    @named V_in  = MaterialStream()
-    @named V_out = MaterialStream()
+    @named L_in  = MaterialStream(; N)
+    @named L_out = MaterialStream(; N)
+    @named V_in  = MaterialStream(; N)
+    @named V_out = MaterialStream(; N)
 
     sts = @variables begin
         nL(t)           # liquid holdup
