@@ -39,6 +39,10 @@ function Reboiler(; name, fluid)
         )...,
         # eq. 13
         H ~ nL * enthalpy(fluid, p, T, x; phase=:liquid),
+        collect(
+            V_out.z .~ y
+        )...,
+        V_out.h ~ enthalpy(fluid, p, T, V_out.z; phase=:vapor),
     ]
     
     return compose(ODESystem(eqs, t, sts, pars; name), [L_in, V_out])

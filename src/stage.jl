@@ -43,6 +43,12 @@ function Stage(; name, fluid)
         )...,
         # eq. 13
         H ~ nL * enthalpy(fluid, p, T, x; phase=:liquid),
+        collect(
+            L_out.z .~ x
+        )...,
+        collect(
+            V_out.z .~ y
+        )...,
         L_out.h ~ enthalpy(fluid, p, T, L_out.z; phase=:liquid),
         V_out.h ~ enthalpy(fluid, p, T, V_out.z; phase=:vapor),
         # eq. 14

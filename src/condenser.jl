@@ -35,6 +35,8 @@ function CondenserBuffer(; name, fluid)
         collect(
             D(xB) .~ (V_in.n/nB) .* (xC .- xB)
         )...,
+        L_back.h ~ enthalpy(fluid, p, T, L_back.z; phase=:liquid),
+        L_dist.h ~ enthalpy(fluid, p, T, L_dist.z; phase=:liquid),
     ]
 
     return compose(ODESystem(eqs, t, sts, pars; name), [V_in, L_back, L_dist])
