@@ -33,10 +33,7 @@ function Stage(; name, fluid)
             @. D(x) ~ (L_in.n*(L_in.z - x) + V_in.n*(V_in.z - x) - V_out.n*(V_out.z - x)) / nL
         )...,
         # eq. 10
-        D(H) ~  L_in.n*enthalpy(fluid, p, T, L_in.z; phase=:liquid) +
-                V_in.n*enthalpy(fluid, p, T, V_in.z; phase=:vapor) - 
-                L_out.n*enthalpy(fluid, p, T, L_out.z; phase=:liquid) - 
-                V_out.n*enthalpy(fluid, p, T, V_out.z; phase=:vapor),
+        D(H) ~  L_in.n*L_in.h + V_in.n*V_in.h - L_out.n*L_out.h - V_out.n*V_out.h,
         # eq. 11
         1 ~ sum(x),
         # eq. 12
@@ -46,6 +43,8 @@ function Stage(; name, fluid)
         )...,
         # eq. 13
         H ~ nL * enthalpy(fluid, p, T, x; phase=:liquid),
+        L_out.h ~ enthalpy(fluid, p, T, L_out.z; phase=:liquid),
+        V_out.h ~ enthalpy(fluid, p, T, V_out.z; phase=:vapor),
         # eq. 14
         nL ~ n_ref / B_ref * h * L_in.n
     ]

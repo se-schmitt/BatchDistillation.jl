@@ -3,6 +3,7 @@
     @variables begin
         n(t)
         z(t)
+        h(t)
     end
-    ODESystem(Equation[], t, [n, z], []; name)
+    ODESystem(Equation[], t, [n, z, h], []; name)
 end

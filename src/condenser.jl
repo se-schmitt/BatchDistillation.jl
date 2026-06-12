@@ -33,7 +33,7 @@ function CondenserBuffer(; name, fluid)
         L_dist.n ~ ϵ*V_in.n,
         L_back.n ~ (1-ϵ)*V_in.n,
         collect(
-            @. D(xB) ~ V_in.n/nB * (xC - xB)
+            D(xB) .~ (V_in.n/nB) .* (xC .- xB)
         )...,
     ]
 
