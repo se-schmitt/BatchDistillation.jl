@@ -30,8 +30,6 @@ function Reboiler(; name, fluid)
         D(H) ~  L_in.n*enthalpy(fluid, p, T, L_in.z; phase=:liquid) -
                 V_out.n*enthalpy(fluid, p, T, V_out.z; phase=:vapor) +
                 Q,
-        # eq. 11
-        1 ~ sum(x),
         # eq. 12
         T ~ _T,
         collect(

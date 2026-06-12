@@ -34,8 +34,6 @@ function Stage(; name, fluid)
         )...,
         # eq. 10
         D(H) ~  L_in.n*L_in.h + V_in.n*V_in.h - L_out.n*L_out.h - V_out.n*V_out.h,
-        # eq. 11
-        1 ~ sum(x),
         # eq. 12
         T ~ _T,
         collect(
