@@ -1,4 +1,4 @@
-function Column(; name, fluid, N_stages)
+function Column(; name, fluid, N_stages, add_reservoir=true)
     
     @named reb = Reboiler(; fluid)    
     stages = [Stage(; name=Symbol(:stage_, j), fluid) for j in 2:N_stages]
@@ -14,5 +14,13 @@ function Column(; name, fluid, N_stages)
     push!(conns, connect(stages[N_stages-1].V_out, cond.V_in))
     push!(conns, connect(cond.L_back, stages[N_stages-1].L_in))
 
-    return ODESystem(conns, t; name, systems=[cond, reb, stages...])
+    systems=[cond, reb, stages...]
+
+    if add_reservoir
+        @named res = Reservoir(; fluid)
+        push!(conns, connect(cond.L_dist, res.L_in))
+        push!(systems, res)
+    end
+
+    return ODESystem(conns, t; name, systems)
 end
