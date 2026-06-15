@@ -1,6 +1,6 @@
 module BatchDistillation
 
-using ModelingToolkit, Clapeyron, OrdinaryDiffEq
+using ModelingToolkit, Clapeyron, OrdinaryDiffEq, NonlinearSolve
 using ModelingToolkit: t_nounits as t, D_nounits as D
 using ModelingToolkit: @register_symbolic
 
@@ -20,7 +20,8 @@ include("reservoir.jl")
 
 # Utils
 include("utils.jl")
+include("initialization.jl")
 
-export Column
+export Column, initialize_total_reflux
 
 end # module BatchDistillation

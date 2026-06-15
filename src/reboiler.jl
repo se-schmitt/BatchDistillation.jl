@@ -27,8 +27,8 @@ function Reboiler(; name, fluid)
             @. D(x) ~ (L_in.n*(L_in.z - x) - V_out.n*(V_out.z - x)) / nL
         )...,
         # eq. 10
-        D(H) ~  L_in.n*enthalpy(fluid, p, T, L_in.z; phase=:liquid) -
-                V_out.n*enthalpy(fluid, p, T, V_out.z; phase=:vapor) +
+        D(H) ~  L_in.n*h_molar(fluid, p, T, L_in.z; phase=:liquid) -
+                V_out.n*h_molar(fluid, p, T, V_out.z; phase=:vapor) +
                 Q,
         # eq. 12
         T ~ _T,
@@ -36,11 +36,11 @@ function Reboiler(; name, fluid)
             y .~ _y
         )...,
         # eq. 13
-        H ~ nL * enthalpy(fluid, p, T, x; phase=:liquid),
+        H ~ nL * h_molar(fluid, p, T, x; phase=:liquid),
         collect(
             V_out.z .~ y
         )...,
-        V_out.h ~ enthalpy(fluid, p, T, V_out.z; phase=:vapor),
+        V_out.h ~ h_molar(fluid, p, T, V_out.z; phase=:vapor),
     ]
     
     return compose(ODESystem(eqs, t, sts, pars; name), [L_in, V_out])

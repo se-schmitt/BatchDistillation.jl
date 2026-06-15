@@ -1,6 +1,10 @@
-# PH flash
+using ModelingToolkit.Symbolics: @register_derivative
+const ForwardDiff = Clapeyron.ForwardDiff
+
+# clamp to a positive, normalized composition so Clapeyron never sees infeasible iterates
+_safez(xs::Vararg) = (v = map(_clip, collect(xs)); v ./ sum(v))
+
 function _ph_flash(fluid, p, h, n)
-    # h_safe = isfinite(h) ? h : -30.0 * sum(n) * 1000.0  # rough h_L_sat per mol
     z = n ./ sum(n)
     res = ph_flash(fluid, p, h, n)
     T = Clapeyron.temperature(res)
@@ -13,7 +17,7 @@ function _ph_flash(fluid, p, h, n)
         return [T, nL..., nV...]
     end
 end
-@register_array_symbolic _ph_flash(fluid, p, h, n::AbstractVector) begin 
+@register_array_symbolic _ph_flash(fluid, p, h, n::AbstractVector) begin
     size=(1+2*length(model),)
     eltype=eltype(n)
     ndims=1
@@ -28,20 +32,75 @@ function wrapper_ph_flash(fluid, p, h, n)
     return T, nL, nV
 end
 
-# bubble temperature
-function _bubble_temperature(fluid, p, x)
-    T, _, _, y = bubble_temperature(fluid, p, x)
-    return [T, y...] 
+# Scalarized, ForwardDiff-differentiable enthalpy and bubble-temperature wrappers
+# (composition as scalar components so MTK index reduction can differentiate them).
+for N in 2:5
+    xs = [Symbol(:x, i) for i in 1:N]
+    bT = Symbol(:_bT_, N)
+
+    for (suf, ph) in ((:L, QuoteNode(:liquid)), (:V, QuoteNode(:vapor)))
+        enth = Symbol(:_enth, suf, :_, N)
+        @eval begin
+            $enth(fluid, p, T, $(xs...)) = enthalpy(fluid, p, T, _safez($(xs...)); phase=$ph)
+            @register_symbolic $enth(fluid::Clapeyron.EoSModel, p, T, $(xs...))
+            $(Symbol(enth, :_dT))(fluid, p, T, $(xs...)) =
+                ForwardDiff.derivative(θ -> $enth(fluid, p, θ, $(xs...)), T)
+            @register_symbolic $(Symbol(enth, :_dT))(fluid::Clapeyron.EoSModel, p, T, $(xs...))
+            @register_derivative $enth(fluid, p, T, $(xs...)) 3 $(Symbol(enth, :_dT))(fluid, p, T, $(xs...))
+        end
+        for i in 1:N
+            d = Symbol(enth, :_dx, i)
+            @eval begin
+                $d(fluid, p, T, $(xs...)) =
+                    ForwardDiff.derivative(ξ -> $enth(fluid, p, T, $(xs[1:i-1]...), ξ, $(xs[i+1:N]...)), $(xs[i]))
+                @register_symbolic $d(fluid::Clapeyron.EoSModel, p, T, $(xs...))
+                @register_derivative $enth(fluid, p, T, $(xs...)) $(3 + i) $d(fluid, p, T, $(xs...))
+            end
+        end
+    end
+
+    @eval begin
+        $bT(fluid, p, $(xs...)) = bubble_temperature(fluid, p, _safez($(xs...)))[1]
+        @register_symbolic $bT(fluid::Clapeyron.EoSModel, p, $(xs...))
+    end
+    for i in 1:N
+        d = Symbol(bT, :_dx, i)
+        @eval begin
+            $d(fluid, p, $(xs...)) =
+                ForwardDiff.derivative(ξ -> $bT(fluid, p, $(xs[1:i-1]...), ξ, $(xs[i+1:N]...)), $(xs[i]))
+            @register_symbolic $d(fluid::Clapeyron.EoSModel, p, $(xs...))
+            @register_derivative $bT(fluid, p, $(xs...)) $(2 + i) $d(fluid, p, $(xs...))
+        end
+    end
+
+    for k in 1:N
+        bY = Symbol(:_bY_, N, :_, k)
+        @eval begin
+            $bY(fluid, p, $(xs...)) = bubble_temperature(fluid, p, _safez($(xs...)))[4][$k]
+            @register_symbolic $bY(fluid::Clapeyron.EoSModel, p, $(xs...))
+        end
+        for i in 1:N
+            d = Symbol(bY, :_dx, i)
+            @eval begin
+                $d(fluid, p, $(xs...)) =
+                    ForwardDiff.derivative(ξ -> $bY(fluid, p, $(xs[1:i-1]...), ξ, $(xs[i+1:N]...)), $(xs[i]))
+                @register_symbolic $d(fluid::Clapeyron.EoSModel, p, $(xs...))
+                @register_derivative $bY(fluid, p, $(xs...)) $(2 + i) $d(fluid, p, $(xs...))
+            end
+        end
+    end
 end
-@register_array_symbolic _bubble_temperature(fluid::Clapeyron.EoSModel, p::Number, x::AbstractVector) begin
-    size=(1+length(x),)
-    eltype=eltype(x)
-    ndims=1
+
+function h_molar(fluid, p, T, z; phase)
+    suf = phase === :liquid ? :L : :V
+    f = getfield(@__MODULE__, Symbol(:_enth, suf, :_, length(z)))
+    f(fluid, p, T, collect(z)...)
 end
 
 function wrapper_bubble_temperature(fluid, p, x)
-    out = _bubble_temperature(fluid, p, x)
-    T = first(out)
-    y = out[2:end]
+    N = length(x)
+    xs = collect(x)
+    T = getfield(@__MODULE__, Symbol(:_bT_, N))(fluid, p, xs...)
+    y = [getfield(@__MODULE__, Symbol(:_bY_, N, :_, k))(fluid, p, xs...) for k in 1:N]
     return T, y
 end
