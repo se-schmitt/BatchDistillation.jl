@@ -19,13 +19,14 @@ function Reboiler(; name, fluid)
 
     _T, _y = wrapper_bubble_temperature(fluid, p, x)
 
+    dxdt = collect(@. (L_in.n*(L_in.z - x) - V_out.n*(V_out.z - x)) / nL)
+
     eqs = Equation[
         # eq. 8
         D(nL) ~ L_in.n - V_out.n,
         # eq. 9
-        collect(
-            @. D(x) ~ (L_in.n*(L_in.z - x) - V_out.n*(V_out.z - x)) / nL
-        )...,
+        [D(x[i]) ~ dxdt[i] for i in 1:N-1]...,
+        1 ~ sum(x),
         # eq. 10
         D(H) ~  L_in.n*h_molar(fluid, p, T, L_in.z; phase=:liquid) -
                 V_out.n*h_molar(fluid, p, T, V_out.z; phase=:vapor) +

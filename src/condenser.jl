@@ -32,9 +32,8 @@ function CondenserBuffer(; name, fluid)
         )...,
         L_dist.n ~ ϵ*V_in.n,
         L_back.n ~ (1-ϵ)*V_in.n,
-        collect(
-            D(xB) .~ (V_in.n/nB) .* (xC .- xB)
-        )...,
+        [D(xB[i]) ~ (V_in.n/nB) * (xC[i] - xB[i]) for i in 1:N-1]...,
+        1 ~ sum(xB),
         L_back.h ~ h_molar(fluid, p, T, L_back.z; phase=:liquid),
         L_dist.h ~ h_molar(fluid, p, T, L_dist.z; phase=:liquid),
     ]

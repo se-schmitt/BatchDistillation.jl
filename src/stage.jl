@@ -1,5 +1,3 @@
-# Stage - one equilibrium tray. PH-flash drives equilibrium; soft-drained
-# liquid holdup approaches HL_target; vapor leaves fast via τ_V ≪ τ_L.
 function Stage(; name, fluid)
     N = length(fluid)
 
@@ -25,13 +23,14 @@ function Stage(; name, fluid)
 
     _T, _y = wrapper_bubble_temperature(fluid, p, x)
 
+    dxdt = collect(@. (L_in.n*(L_in.z - x) + V_in.n*(V_in.z - x) - V_out.n*(V_out.z - x)) / nL)
+
     eqs = Equation[
         # eq. 8
         D(nL) ~ L_in.n + V_in.n - L_out.n - V_out.n,
         # eq. 9
-        collect(
-            @. D(x) ~ (L_in.n*(L_in.z - x) + V_in.n*(V_in.z - x) - V_out.n*(V_out.z - x)) / nL
-        )...,
+        [D(x[i]) ~ dxdt[i] for i in 1:N-1]...,
+        1 ~ sum(x),
         # eq. 10
         D(H) ~  L_in.n*L_in.h + V_in.n*V_in.h - L_out.n*L_out.h - V_out.n*V_out.h,
         # eq. 12
@@ -49,8 +48,8 @@ function Stage(; name, fluid)
         )...,
         L_out.h ~ h_molar(fluid, p, T, L_out.z; phase=:liquid),
         V_out.h ~ h_molar(fluid, p, T, V_out.z; phase=:vapor),
-        # eq. 14
-        nL ~ n_ref / B_ref * h * L_in.n
+        # eq. 14 (S27)
+        nL ~ n_ref / B_ref * h * L_out.n
     ]
     
     return compose(ODESystem(eqs, t, sts, pars; name), [L_in, L_out, V_in, V_out])
