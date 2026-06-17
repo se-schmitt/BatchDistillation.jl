@@ -23,14 +23,13 @@ function Stage(; name, fluid)
 
     _T, _y = wrapper_bubble_temperature(fluid, p, x)
 
-    dxdt = collect(@. (L_in.n*(L_in.z - x) + V_in.n*(V_in.z - x) - V_out.n*(V_out.z - x)) / nL)
-
     eqs = Equation[
         # eq. 8
         D(nL) ~ L_in.n + V_in.n - L_out.n - V_out.n,
         # eq. 9
-        [D(x[i]) ~ dxdt[i] for i in 1:N-1]...,
-        1 ~ sum(x),
+        collect(
+            @. D(x) ~ (L_in.n*(L_in.z - x) + V_in.n*(V_in.z - x) - V_out.n*(V_out.z - x)) / nL
+        )...,
         # eq. 10
         D(H) ~  L_in.n*L_in.h + V_in.n*V_in.h - L_out.n*L_out.h - V_out.n*V_out.h,
         # eq. 12
