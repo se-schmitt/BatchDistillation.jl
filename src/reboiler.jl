@@ -22,10 +22,9 @@ function Reboiler(; name, fluid)
     eqs = Equation[
         # eq. 8
         D(nL) ~ L_in.n - V_out.n,
-        # eq. 9
-        collect(
-            @. D(x) ~ (L_in.n*(L_in.z - x) - V_out.n*(V_out.z - x)) / nL
-        )...,
+        # eq. 9 (eq. S24)
+        [D(x[i]) ~ (L_in.n*(L_in.z[i] - x[i]) - V_out.n*(V_out.z[i] - x[i])) / nL for i in 1:N-1]...,
+        1 ~ sum(collect(x)),
         # eq. 10 (S23a)
         D(H) ~  L_in.n*L_in.h -
                 V_out.n*h_molar(fluid, p, T, V_out.z; phase=:vapor) +

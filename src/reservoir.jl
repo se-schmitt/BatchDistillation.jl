@@ -10,9 +10,8 @@ function Reservoir(; fluid, name)
 
     eqs = Equation[
         D(nL) ~ L_in.n,
-        collect(
-            @. D(x) ~ (L_in.n*(L_in.z - x)) / nL
-        )...,
+        [D(x[i]) ~ (L_in.n*(L_in.z[i] - x[i])) / nL for i in 1:N-1]...,
+        1 ~ sum(collect(x)),
     ]
 
     return compose(ODESystem(eqs, t, sts, []; name), [L_in])
