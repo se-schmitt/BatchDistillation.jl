@@ -1,4 +1,4 @@
-function Stage(; name, fluid, f_U_stage=xT->zero(xT))
+function Stage(; name, fluid, f_U_stage=xT->zero(xT), F_Q_stage=xT->zero(xT))
     N = length(fluid)
 
     @named L_in  = MaterialStream(; N)
@@ -30,7 +30,7 @@ function Stage(; name, fluid, f_U_stage=xT->zero(xT))
         [D(x[i]) ~ (L_in.n*(L_in.z[i] - x[i]) + V_in.n*(V_in.z[i] - x[i]) - V_out.n*(V_out.z[i] - x[i])) / nL for i in 1:N-1]...,
         1 ~ sum(collect(x)),
         # eq. 10
-        D(U) ~  L_in.n*L_in.h + V_in.n*V_in.h - L_out.n*L_out.h - V_out.n*V_out.h,
+        D(U) ~  L_in.n*L_in.h + V_in.n*V_in.h - L_out.n*L_out.h - V_out.n*V_out.h + F_Q_stage(T),
         # eq. 12
         T ~ _T,
         collect(
