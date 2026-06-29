@@ -9,7 +9,7 @@ function Reboiler(; name, fluid)
         T(t)            # temperature
         x(t)[1:N]       # liquid mole fraction
         y(t)[1:N]       # vapor mole fraction
-        H(t)            # enthalpy
+        U(t)            # enthalpy
     end
 
     pars = @parameters begin
@@ -26,7 +26,7 @@ function Reboiler(; name, fluid)
         [D(x[i]) ~ (L_in.n*(L_in.z[i] - x[i]) - V_out.n*(V_out.z[i] - x[i])) / nL for i in 1:N-1]...,
         1 ~ sum(collect(x)),
         # eq. 10 (S23a)
-        D(H) ~  L_in.n*L_in.h -
+        D(U) ~  L_in.n*L_in.h -
                 V_out.n*h_molar(fluid, p, T, V_out.z; phase=:vapor) +
                 Q,
         # eq. 12
@@ -35,7 +35,7 @@ function Reboiler(; name, fluid)
             y .~ _y
         )...,
         # eq. 13
-        H ~ nL * h_molar(fluid, p, T, x; phase=:liquid),
+        U ~ nL * h_molar(fluid, p, T, x; phase=:liquid) + f_U_stage(T),
         collect(
             V_out.z .~ y
         )...,

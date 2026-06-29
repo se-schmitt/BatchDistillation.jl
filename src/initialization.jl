@@ -46,7 +46,7 @@ function initialize_total_reflux(sys; fluid, N_stages, p, Q, x_charge,
         for k in 1:N; setv!(vals, u.x[k], xcol[i][k]); end
         setv!(vals, u.nL, nL)
         setv!(vals, u.T, Tcol[i])
-        setv!(vals, u.H, nL * h_molar(fluid, p, Tcol[i], xcol[i]; phase = :liquid))
+        setv!(vals, u.U, nL * h_molar(fluid, p, Tcol[i], xcol[i]; phase = :liquid))
     end
     for k in 1:N
         setv!(vals, sys.cond.xB[k], xC[k])
@@ -56,7 +56,7 @@ function initialize_total_reflux(sys; fluid, N_stages, p, Q, x_charge,
 
     isflow(s)  = occursin(r"₊(V_out|V_in|L_out|L_in|L_back|L_dist)₊n", s)
     isderiv(s) = occursin("ˍt", s)                  # dummy-derivative state (index reduction)
-    isalg(s)   = isflow(s) || isderiv(s) || occursin(r"₊[TH]\(", s) || occursin(r"stage_\d+₊nL", s)
+    isalg(s)   = isflow(s) || isderiv(s) || occursin(r"₊[TU]\(", s) || occursin(r"stage_\d+₊nL", s)
     u0      = Dict{Any,Float64}()
     guesses = Dict{Any,Float64}()
     for u in unknowns(sys)
