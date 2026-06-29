@@ -6,7 +6,7 @@ function Stage(; name, fluid)
     @named V_in  = MaterialStream(; N)
     @named V_out = MaterialStream(; N)
 
-    sts = @variables begin
+    vars = @variables begin
         nL(t)           # liquid holdup
         T(t)            # temperature
         x(t)[1:N]       # liquid mole fraction
@@ -50,5 +50,5 @@ function Stage(; name, fluid)
         nL ~ n_ref / B_ref * h * L_out.n
     ]
     
-    return compose(ODESystem(eqs, t, sts, pars; name), [L_in, L_out, V_in, V_out])
+    return compose(ODESystem(eqs, t, vars, pars; name), [L_in, L_out, V_in, V_out])
 end

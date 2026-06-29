@@ -3,7 +3,7 @@ function Reservoir(; fluid, name)
 
     @named L_in = MaterialStream(; N)
 
-    sts = @variables begin 
+    vars = @variables begin 
         nL(t)
         x(t)[1:N]
     end
@@ -14,5 +14,5 @@ function Reservoir(; fluid, name)
         1 ~ sum(collect(x)),
     ]
 
-    return compose(ODESystem(eqs, t, sts, []; name), [L_in])
+    return compose(ODESystem(eqs, t, vars, []; name), [L_in])
 end

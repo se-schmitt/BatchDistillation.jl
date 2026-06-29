@@ -5,7 +5,7 @@ function CondenserBuffer(; name, fluid)
     @named L_back = MaterialStream(; N)
     @named L_dist = MaterialStream(; N)
 
-    sts = @variables begin
+    vars = @variables begin
         xB(t)[1:N]      # mole fraction buffer
         xC(t)[1:N]      # mole fraction condenser
         T(t)            # temperature
@@ -39,5 +39,5 @@ function CondenserBuffer(; name, fluid)
         L_dist.h ~ h_molar(fluid, p, T, L_dist.z; phase=:liquid),
     ]
 
-    return compose(ODESystem(eqs, t, sts, pars; name), [V_in, L_back, L_dist])
+    return compose(ODESystem(eqs, t, vars, pars; name), [V_in, L_back, L_dist])
 end

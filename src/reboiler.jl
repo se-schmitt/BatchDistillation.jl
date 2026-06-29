@@ -4,7 +4,7 @@ function Reboiler(; name, fluid)
     @named L_in  = MaterialStream(; N)
     @named V_out = MaterialStream(; N)
 
-    sts = @variables begin
+    vars = @variables begin
         nL(t)           # liquid holdup
         T(t)            # temperature
         x(t)[1:N]       # liquid mole fraction
@@ -42,5 +42,5 @@ function Reboiler(; name, fluid)
         V_out.h ~ h_molar(fluid, p, T, V_out.z; phase=:vapor),
     ]
     
-    return compose(ODESystem(eqs, t, sts, pars; name), [L_in, V_out])
+    return compose(ODESystem(eqs, t, vars, pars; name), [L_in, V_out])
 end
