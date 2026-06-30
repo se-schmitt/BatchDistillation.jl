@@ -1,4 +1,4 @@
-function Reboiler(; name, fluid)
+function Reboiler(; name, fluid, f_U_stage=xT->zero(xT))
     N = length(fluid)
 
     @named L_in  = MaterialStream(; N)
