@@ -1,6 +1,7 @@
 #TODO replace core by adiabatic column component 
 function initialize_total_reflux(sys; fluid, N_stages, p, Q, x_charge,
                                  n_charge = 20.0, n_res = 1e-3,
+                                 f_U = (i, T) -> zero(float(T)),
                                  abstol = 1e-10, maxiters = 1000)
     N = length(fluid)
     M = N_stages                      # liquid units: 1 = reboiler, 2..M = stages
@@ -21,16 +22,18 @@ function initialize_total_reflux(sys; fluid, N_stages, p, Q, x_charge,
         end
         F
     end
-    X0 = repeat(collect(float.(x_charge)), M)
+    X0 = Vector{Float64}(undef, M*N)
+    X0[1:N] .= float.(x_charge)
+    for i in 2:M
+        X0[(i-1)*N+1 : i*N] .= _vapor(view(X0, (i-2)*N+1 : (i-1)*N))
+    end
     nlsol = solve(NonlinearProblem(NonlinearFunction(resid!), X0), NewtonRaphson(); abstol, maxiters)
 
     xcol = [nlsol.u[(i-1)*N+1 : i*N] for i in 1:M]    # liquid comp per unit
     Tcol = [bubble_temperature(fluid, p, _safez(xc...))[1] for xc in xcol]
     ycol = [_vapor(xc) for xc in xcol]                # vapor comp per unit
     xC   = ycol[M]                                    # vapor to condenser = top vapor
-
-    # molar flow magnitude from the reboiler energy balance (constant molar overflow at
-    # total reflux): V·h_Lin − V·h_Vout + Q = 0. h_Lin is the liquid descending from above.
+    
     hVout = h_molar(fluid, p, Tcol[1], ycol[1]; phase = :vapor)
     hLin  = M ≥ 2 ? h_molar(fluid, p, Tcol[2], xcol[2]; phase = :liquid) :
                     h_molar(fluid, p, Tcol[1], xcol[1]; phase = :liquid)
@@ -43,10 +46,21 @@ function initialize_total_reflux(sys; fluid, N_stages, p, Q, x_charge,
     for (i, u) in enumerate(units)
         # reboiler holdup is the pinned charge; stage holdups follow nL = k·L_out.n (=k·V at total reflux)
         nL = i == 1 ? n_charge : getp(u.n_ref) / getp(u.B_ref) * getp(u.h) * V
-        for k in 1:N; setv!(vals, u.x[k], xcol[i][k]); end
+        for k in 1:N
+            setv!(vals, u.x[k], xcol[i][k])
+            hasproperty(u, :L_out) && setv!(vals, u.L_out.z[k], xcol[i][k])
+            hasproperty(u, :V_out) && setv!(vals, u.V_out.z[k], ycol[i][k])
+        end
         setv!(vals, u.nL, nL)
         setv!(vals, u.T, Tcol[i])
-        setv!(vals, u.U, nL * h_molar(fluid, p, Tcol[i], xcol[i]; phase = :liquid))
+        setv!(vals, u.U, nL * h_molar(fluid, p, Tcol[i], xcol[i]; phase = :liquid) + f_U(i, Tcol[i]))
+        if hasproperty(u, :L_in)
+            zin = i < M ? xcol[i+1] : xC
+            for k in 1:N; setv!(vals, u.L_in.z[k], zin[k]); end
+        end
+        if hasproperty(u, :V_in)
+            for k in 1:N; setv!(vals, u.V_in.z[k], ycol[i-1][k]); end
+        end
     end
     for k in 1:N
         setv!(vals, sys.cond.xB[k], xC[k])

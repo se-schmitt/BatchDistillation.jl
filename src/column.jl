@@ -1,8 +1,13 @@
-function Column(; name, fluid, N_stages, add_reservoir=true, use_ΔT=false)
-    
-    @named reb = Reboiler(; fluid)    
-    stages = [Stage(; name=Symbol(:stage_, j), fluid) for j in 2:N_stages]
-    @named cond = CondenserBuffer(; fluid)
+function Column(; name, fluid, N_stages, add_reservoir=true, use_ΔT=false,
+                stage_h = 1.0,
+                reb_f_U = xT->zero(xT),
+                stage_f_U = j -> (xT->zero(xT)),
+                stage_F_Q = j -> (xT->zero(xT)))
+
+    @named reb = Reboiler(; fluid, f_U_stage=reb_f_U)
+    stages = [Stage(; name=Symbol(:stage_, j), fluid, h_stage=stage_h,
+                    f_U_stage=stage_f_U(j), F_Q_stage=stage_F_Q(j)) for j in 2:N_stages]
+    @named cond = CondenserBuffer(; fluid, use_ΔT)
 
     pars = Num[]
     vars = Num[]
@@ -26,9 +31,9 @@ function Column(; name, fluid, N_stages, add_reservoir=true, use_ΔT=false)
     end
 
     if use_ΔT
-        @variables ΔT(t)
-        push!(vars, ΔT)
-        push!(eqs, ΔT ~ reb.T - cond.T)
+        @parameters ΔT
+        push!(pars, ΔT)
+        push!(eqs, cond.T ~ stages[N_stages-1].T - ΔT)
     end
 
     return ODESystem(eqs, t, vars, pars; name, systems)

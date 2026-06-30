@@ -1,4 +1,4 @@
-function CondenserBuffer(; name, fluid)
+function CondenserBuffer(; name, fluid, use_ΔT=false)
     N = length(fluid)
 
     @named V_in = MaterialStream(; N)
@@ -12,15 +12,12 @@ function CondenserBuffer(; name, fluid)
     end
 
     pars = @parameters begin
-        p 
+        p
         nB
         ϵ
-    end 
-
-    _T, _ = wrapper_bubble_temperature(fluid, p, xC)
+    end
 
     eqs = [
-        T ~ _T,
         collect(
             L_dist.z .~ xB
         )...,
@@ -38,6 +35,11 @@ function CondenserBuffer(; name, fluid)
         L_back.h ~ h_molar(fluid, p, T, L_back.z; phase=:liquid),
         L_dist.h ~ h_molar(fluid, p, T, L_dist.z; phase=:liquid),
     ]
+
+    if !use_ΔT
+        _T, _ = wrapper_bubble_temperature(fluid, p, xC)
+        push!(eqs, T ~ _T)
+    end
 
     return compose(ODESystem(eqs, t, vars, pars; name), [V_in, L_back, L_dist])
 end
