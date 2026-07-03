@@ -10,6 +10,6 @@ NonlinearSolve = "8913a72c-1f9b-4ce2-8d82-65094dcecaec"
 OrdinaryDiffEq = "1dea7af3-3e70-54e6-95c3-0bf5283fa5ed"
 
 [compat]
-Clapeyron = "0.6.25"
-ModelingToolkit = "11.26.8"
-OrdinaryDiffEq = "7.0.0"
+Clapeyron = "0.6.26"
+ModelingToolkit = "10,11"
+OrdinaryDiffEq = "6,7"
