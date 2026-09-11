@@ -4,6 +4,35 @@ const ForwardDiff = Clapeyron.ForwardDiff
 # clamp to a positive, normalized composition so Clapeyron never sees infeasible iterates
 _safez(xs::Vararg) = (v = map(_clip, collect(xs)); v ./ sum(v))
 
+_pure_models(m) = hasproperty(m, :puremodel) ? m.puremodel.pure :
+                  hasproperty(m, :vle)       ? _pure_models(m.vle) :
+                  hasproperty(m, :fluid)     ? _pure_models(m.fluid) : nothing
+
+const _TSAT_CACHE = Dict{Tuple{UInt,Int,Float64},Float64}()
+
+function _T0_guess(fluid, p, z)
+    pure = _pure_models(fluid)
+    isnothing(pure) && return nothing
+    pv = Float64(ForwardDiff.value(p))
+    id = objectid(pure)
+    T0 = 0.0
+    for i in eachindex(z)
+        Ts = get!(_TSAT_CACHE, (id, i, pv)) do
+            Float64(Clapeyron.saturation_temperature(pure[i], pv)[1])
+        end
+        isfinite(Ts) || return nothing
+        T0 += Float64(ForwardDiff.value(z[i])) * Ts
+    end
+    return T0
+end
+
+# bubble_temperature with initial guess
+function _bubbleT(fluid, p, z)
+    T0 = _T0_guess(fluid, p, z)
+    return isnothing(T0) ? bubble_temperature(fluid, p, z) :
+                           bubble_temperature(fluid, p, z; T0 = T0)
+end
+
 function _ph_flash(fluid, p, h, n)
     z = n ./ sum(n)
     res = ph_flash(fluid, p, h, n)
@@ -60,7 +89,7 @@ for N in 2:5
     end
 
     @eval begin
-        $bT(fluid, p, $(xs...)) = bubble_temperature(fluid, p, _safez($(xs...)))[1]
+        $bT(fluid, p, $(xs...)) = _bubbleT(fluid, p, _safez($(xs...)))[1]
         @register_symbolic $bT(fluid::Clapeyron.EoSModel, p, $(xs...))
     end
     for i in 1:N
@@ -76,7 +105,7 @@ for N in 2:5
     for k in 1:N
         bY = Symbol(:_bY_, N, :_, k)
         @eval begin
-            $bY(fluid, p, $(xs...)) = bubble_temperature(fluid, p, _safez($(xs...)))[4][$k]
+            $bY(fluid, p, $(xs...)) = _bubbleT(fluid, p, _safez($(xs...)))[4][$k]
             @register_symbolic $bY(fluid::Clapeyron.EoSModel, p, $(xs...))
         end
         for i in 1:N

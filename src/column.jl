@@ -2,11 +2,14 @@ function Column(; name, fluid, N_stages, add_reservoir=true, use_ΔT=false,
                 stage_h = 1.0,
                 reb_f_U = xT->zero(xT),
                 stage_f_U = j -> (xT->zero(xT)),
-                stage_F_Q = j -> (xT->zero(xT)))
+                stage_F_Q = j -> (xT->zero(xT)),
+                reb_UA = nothing,
+                stage_UA = j -> nothing)
 
-    @named reb = Reboiler(; fluid, f_U_stage=reb_f_U)
+    @named reb = Reboiler(; fluid, f_U_stage=reb_f_U, UA_stage=reb_UA)
     stages = [Stage(; name=Symbol(:stage_, j), fluid, h_stage=stage_h,
-                    f_U_stage=stage_f_U(j), F_Q_stage=stage_F_Q(j)) for j in 2:N_stages]
+                    f_U_stage=stage_f_U(j), F_Q_stage=stage_F_Q(j),
+                    UA_stage=stage_UA(j)) for j in 2:N_stages]
     @named cond = CondenserBuffer(; fluid, use_ΔT)
 
     pars = Num[]

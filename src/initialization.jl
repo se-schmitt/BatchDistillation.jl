@@ -53,7 +53,13 @@ function initialize_total_reflux(sys; fluid, N_stages, p, Q, x_charge,
         end
         setv!(vals, u.nL, nL)
         setv!(vals, u.T, Tcol[i])
-        setv!(vals, u.U, nL * h_molar(fluid, p, Tcol[i], xcol[i]; phase = :liquid) + f_U(i, Tcol[i]))
+        wall = hasproperty(u, :T_wall)
+        setv!(vals, u.U, nL * h_molar(fluid, p, Tcol[i], xcol[i]; phase = :liquid) +
+                         (wall ? zero(Tcol[i]) : f_U(i, Tcol[i])))
+        if wall
+            setv!(vals, u.T_wall, Tcol[i])
+            setv!(vals, u.U_wall, f_U(i, Tcol[i]))
+        end
         if hasproperty(u, :L_in)
             zin = i < M ? xcol[i+1] : xC
             for k in 1:N; setv!(vals, u.L_in.z[k], zin[k]); end
