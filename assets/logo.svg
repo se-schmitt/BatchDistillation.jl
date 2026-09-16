@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 184 216" width="184" height="216" role="img" aria-labelledby="title desc">
+  <title id="title">BatchDistillation.jl</title>
+  <desc id="desc">Schematic batch distillation column: a red reboiler at the bottom, a trayed column, a green condenser at the top and a purple distillate receiver.</desc>
+
+  <g fill="none" stroke="#4063D8" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+    <!-- vapour line: column head to condenser -->
+    <path d="M38 56 V42 Q38 34 46 34 H128"/>
+    <!-- distillate line: condenser to receiver -->
+    <path d="M150 56 V128"/>
+    <!-- column shell -->
+    <rect x="14" y="56" width="48" height="98" rx="10"/>
+  </g>
+
+  <!-- flow arrows -->
+  <g fill="#4063D8">
+    <path d="M110 25 l14 9 -14 9 z"/>
+    <path d="M141 100 h18 l-9 14 z"/>
+  </g>
+
+  <!-- trays -->
+  <g stroke="#4063D8" stroke-width="5" stroke-linecap="round">
+    <path d="M22 80 H54"/>
+    <path d="M22 105 H54"/>
+    <path d="M22 130 H54"/>
+  </g>
+
+  <!-- condenser -->
+  <circle cx="150" cy="34" r="22" fill="#389826"/>
+  <path d="M140 26 L160 31 L140 37 L160 42" fill="none" stroke="#fff" stroke-width="3.5"
+        stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- distillate receiver -->
+  <circle cx="150" cy="150" r="22" fill="#9558B2"/>
+  <path d="M150 138 c7 9 10 12.5 10 16.5 a10 10 0 0 1 -20 0 c0 -4 3 -7.5 10 -16.5 z" fill="#fff"/>
+
+  <!-- reboiler -->
+  <circle cx="38" cy="178" r="26" fill="#CB3C33"/>
+  <g fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round">
+    <path d="M25 172 q6.5 -6 13 0 t13 0"/>
+    <path d="M25 184 q6.5 -6 13 0 t13 0"/>
+  </g>
+</svg>
