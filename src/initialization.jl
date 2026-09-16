@@ -74,9 +74,11 @@ function initialize_total_reflux(sys; fluid, N_stages, p, Q, x_charge,
     end
     setv!(vals, sys.res.nL, n_res)
 
+    # Stage holdups nL are differential states after index reduction and have to be
+    # pinned in u0, otherwise the initialization system comes out underdetermined.
     isflow(s)  = occursin(r"₊(V_out|V_in|L_out|L_in|L_back|L_dist)₊n", s)
     isderiv(s) = occursin("ˍt", s)                  # dummy-derivative state (index reduction)
-    isalg(s)   = isflow(s) || isderiv(s) || occursin(r"₊[TU]\(", s) || occursin(r"stage_\d+₊nL", s)
+    isalg(s)   = isflow(s) || isderiv(s) || occursin(r"₊[TU]\(", s)
     u0      = Dict{Any,Float64}()
     guesses = Dict{Any,Float64}()
     for u in unknowns(sys)

@@ -1,4 +1,4 @@
-function Reboiler(; name, fluid, f_U_stage=xT->zero(xT), UA_stage=nothing)
+function Reboiler(; name, fluid, p_stage=101325.0, f_U_stage=xT->zero(xT), UA_stage=nothing)
     N = length(fluid)
 
     @named L_in  = MaterialStream(; N)
@@ -13,7 +13,7 @@ function Reboiler(; name, fluid, f_U_stage=xT->zero(xT), UA_stage=nothing)
     end
 
     pars = @parameters begin
-        p
+        p = p_stage
         Q
     end
 

@@ -18,8 +18,7 @@ include("column.jl")
 include("connector.jl")
 include("reservoir.jl")
 
-# Utils
-include("utils.jl")
+# Initialization
 include("initialization.jl")
 
 export Column, initialize_total_reflux

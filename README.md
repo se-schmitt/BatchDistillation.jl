@@ -14,7 +14,8 @@
 
 ## Installation
 
-The package is not registered — install it directly from GitHub:
+Requires Julia 1.10 or newer. The package is not registered — install it directly
+from GitHub:
 
 ```julia
 using Pkg
@@ -46,16 +47,11 @@ x_charge = [0.5, 0.5]       #      initial still composition
 n_charge = 20.0             # mol  initial still holdup
 
 # 2 — build the flowsheet and compile the DAE
-@named col = Column(; fluid, N_stages)
+@named col = Column(; fluid, N_stages, p)
 sys = mtkcompile(col)
 
-# 3 — parameters
-stage(j) = getproperty(sys, Symbol(:stage_, j))
-pars = Dict(
-    sys.reb.p  => p,  sys.reb.Q  => Q,
-    sys.cond.p => p,  sys.cond.nB => 0.05,  sys.cond.ϵ => 0.2,   # ϵ = D/V  ⟹  R = 4
-    (stage(j).p => p for j in 2:N_stages)...,
-)
+# 3 — operating parameters
+pars = Dict(sys.reb.Q => Q, sys.cond.nB => 0.05, sys.cond.ϵ => 0.2)   # ϵ = D/V ⟹ R = 4
 
 # 4 — consistent initial state from a total-reflux steady state
 init = initialize_total_reflux(sys; fluid, N_stages, p, Q, x_charge, n_charge)
@@ -70,11 +66,13 @@ sol[sys.res.x[1]][end]    # 0.825  methanol in the collected product
 sol[sys.reb.x[1]][end]    # 0.333  methanol left in the still
 ```
 
+The column pressure is a single `Column` keyword — it becomes the default of the
+`p` parameter of every unit, and can still be overridden per unit (`sys.cond.p => …`)
+if you ever want a pressure profile.
+
 The thermodynamic calls are registered as symbolic functions with hand-supplied
 derivatives, so the integrator has to build its Jacobian by finite differences
 (`autodiff = AutoFiniteDiff()`) rather than by differentiating through Clapeyron.
-ModelingToolkit will also warn that the initialization system is underdetermined —
-the `guesses` returned by `initialize_total_reflux` pin it down by least squares.
 
 ## Physical basics
 
@@ -143,7 +141,10 @@ Because the composition, energy and equilibrium equations are coupled, the resul
 is a stiff, high-index DAE. ModelingToolkit performs the index reduction in
 `mtkcompile`, and `initialize_total_reflux` supplies a physically consistent
 starting point by solving the total-reflux steady state (`x_i = y_{i−1}` up the
-column, with the still pinned to the charge) before the batch is started.
+column, with the still pinned to the charge) before the batch is started. It
+returns every differential state in `u0` and exactly the algebraic ones in
+`guesses`, so the initialization system is square; pass `fully_determined = true`
+to `ODEProblem` if you want ModelingToolkit to verify that.
 
 ## API
 
@@ -152,5 +153,5 @@ column, with the still pinned to the charge) before the batch is started.
 | `Column(; fluid, N_stages, …)` | assemble reboiler, stages, condenser and reservoir into one `ODESystem` |
 | `initialize_total_reflux(sys; fluid, N_stages, p, Q, x_charge, …)` | consistent initial state `(; u0, guesses, V, …)` from a total-reflux steady state |
 
-`Column` keywords: `add_reservoir`, `use_ΔT`, `stage_h`, `reb_f_U`, `stage_f_U`,
-`stage_F_Q`, `reb_UA`, `stage_UA`.
+`Column` keywords: `p` (column pressure, default 1 atm), `add_reservoir`, `use_ΔT`,
+`stage_h`, `reb_f_U`, `stage_f_U`, `stage_F_Q`, `reb_UA`, `stage_UA`.

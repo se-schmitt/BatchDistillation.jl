@@ -1,4 +1,4 @@
-function Column(; name, fluid, N_stages, add_reservoir=true, use_ΔT=false,
+function Column(; name, fluid, N_stages, p = 101325.0, add_reservoir=true, use_ΔT=false,
                 stage_h = 1.0,
                 reb_f_U = xT->zero(xT),
                 stage_f_U = j -> (xT->zero(xT)),
@@ -6,11 +6,13 @@ function Column(; name, fluid, N_stages, add_reservoir=true, use_ΔT=false,
                 reb_UA = nothing,
                 stage_UA = j -> nothing)
 
-    @named reb = Reboiler(; fluid, f_U_stage=reb_f_U, UA_stage=reb_UA)
-    stages = [Stage(; name=Symbol(:stage_, j), fluid, h_stage=stage_h,
+    # `p` is the column pressure; it is handed to every unit as the default of its
+    # own `p` parameter, which can still be overridden per unit in the problem.
+    @named reb = Reboiler(; fluid, p_stage=p, f_U_stage=reb_f_U, UA_stage=reb_UA)
+    stages = [Stage(; name=Symbol(:stage_, j), fluid, p_stage=p, h_stage=stage_h,
                     f_U_stage=stage_f_U(j), F_Q_stage=stage_F_Q(j),
                     UA_stage=stage_UA(j)) for j in 2:N_stages]
-    @named cond = CondenserBuffer(; fluid, use_ΔT)
+    @named cond = CondenserBuffer(; fluid, p_stage=p, use_ΔT)
 
     pars = Num[]
     vars = Num[]
