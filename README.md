@@ -74,6 +74,11 @@ The thermodynamic calls are registered as symbolic functions with hand-supplied
 derivatives, so the integrator has to build its Jacobian by finite differences
 (`autodiff = AutoFiniteDiff()`) rather than by differentiating through Clapeyron.
 
+A larger, runnable example — a three-component batch (butan-1-ol / propan-2-ol /
+water) in a 12-unit packed column with wall heat capacities, a heat loss at the
+head and a pressure profile — is in
+[`examples/batch_distillation_3comp/`](examples/batch_distillation_3comp/).
+
 ## Physical basics
 
 The column is a stack of well-mixed units — a heated **reboiler** (still) at the
