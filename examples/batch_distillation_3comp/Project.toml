@@ -1,0 +1,20 @@
+[deps]
+ADTypes = "47edcb42-4c32-4615-8424-f2b9edc5f35b"
+BatchDistillation = "1c514aaa-0bb0-4687-90b3-463ccf1688ea"
+CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
+CairoMakie = "13f3f980-e62b-5c42-98c6-ff1f3baf88f0"
+ChemicalIdentifiers = "fa4ea961-1416-484e-bda2-883ee1634ba5"
+Clapeyron = "7c7805af-46cc-48c9-995b-ed0ed2dc909a"
+DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+GCIdentifier = "b7ea765e-cbac-4e4a-9b0d-5427cc302506"
+ModelingToolkit = "961ee093-0014-501f-94e3-6117800e7a78"
+OrdinaryDiffEq = "1dea7af3-3e70-54e6-95c3-0bf5283fa5ed"
+Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
+SciMLBase = "0bca4576-84f4-4d90-8ffe-ffa030f20462"
+Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
+
+[sources]
+BatchDistillation = {path = "../.."}
+
+[compat]
+julia = "1.10"

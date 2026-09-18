@@ -1,5 +1,5 @@
-function Stage(; name, fluid, f_U_stage=xT->zero(xT), F_Q_stage=xT->zero(xT), h_stage=1.0,
-               UA_stage=nothing)
+function Stage(; name, fluid, p_stage=101325.0, f_U_stage=xT->zero(xT), F_Q_stage=xT->zero(xT),
+               h_stage=1.0, UA_stage=nothing)
     N = length(fluid)
 
     @named L_in  = MaterialStream(; N)
@@ -16,7 +16,7 @@ function Stage(; name, fluid, f_U_stage=xT->zero(xT), F_Q_stage=xT->zero(xT), h_
     end
 
     pars = @parameters begin
-        p
+        p = p_stage
         n_ref = 0.042
         B_ref = 5/3600
         h = h_stage

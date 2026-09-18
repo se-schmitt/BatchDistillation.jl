@@ -1,4 +1,4 @@
-function CondenserBuffer(; name, fluid, use_ΔT=false)
+function CondenserBuffer(; name, fluid, p_stage=101325.0, use_ΔT=false)
     N = length(fluid)
 
     @named V_in = MaterialStream(; N)
@@ -12,7 +12,7 @@ function CondenserBuffer(; name, fluid, use_ΔT=false)
     end
 
     pars = @parameters begin
-        p
+        p = p_stage
         nB
         ϵ
     end
