@@ -10,6 +10,12 @@
   <a href="https://github.com/ClapeyronThermo/Clapeyron.jl">Clapeyron.jl</a> thermodynamics.
 </p>
 
+<p align="center">
+  <a href="https://github.com/se-schmitt/BatchDistillation.jl/actions/workflows/CI.yml">
+    <img src="https://github.com/se-schmitt/BatchDistillation.jl/actions/workflows/CI.yml/badge.svg" alt="CI">
+  </a>
+</p>
+
 ---
 
 ## Installation
