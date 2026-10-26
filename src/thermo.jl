@@ -5,6 +5,7 @@ const ForwardDiff = Clapeyron.ForwardDiff
 _safez(xs::Vararg) = (v = map(_clip, collect(xs)); v ./ sum(v))
 
 _pure_models(m) = hasproperty(m, :puremodel) ? m.puremodel.pure :
+                  hasproperty(m, :pure)      ? m.pure :
                   hasproperty(m, :vle)       ? _pure_models(m.vle) :
                   hasproperty(m, :fluid)     ? _pure_models(m.fluid) : nothing
 
@@ -29,8 +30,11 @@ end
 # bubble_temperature with initial guess
 function _bubbleT(fluid, p, z)
     T0 = _T0_guess(fluid, p, z)
-    return isnothing(T0) ? bubble_temperature(fluid, p, z) :
-                           bubble_temperature(fluid, p, z; T0 = T0)
+    res = isnothing(T0) ? bubble_temperature(fluid, p, z) :
+                          bubble_temperature(fluid, p, z; T0 = T0)
+    # near azeotropes (x ≈ y) FugBubbleTemperature mistakes the solution for the trivial one
+    isnan(res[1]) && (res = bubble_temperature(fluid, p, z, FugBubbleTemperature(; T0, tol_y = 1e-12)))
+    return res
 end
 
 function _ph_flash(fluid, p, h, n)
