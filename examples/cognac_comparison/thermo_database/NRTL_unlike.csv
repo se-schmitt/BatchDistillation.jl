@@ -1,0 +1,37 @@
+Clapeyron Database File,,,,,,,
+NRTL Unlike Parameters,,,,,,,
+species1,species2,a,b,c,source
+ethanol,methanol,0.0655186805,0.0,0.3,LTD
+methanol,ethanol,-0.05342038,0.0,0.3,LTD
+acetone,methanol,0.29423681,0.0,0.3,LTD
+methanol,acetone,0.333409022,0.0,0.3,LTD
+acetone,butan-1-ol,0.698225345,0.0,0.3,LTD
+butan-1-ol,acetone,-0.068396483,0.0,0.3,LTD
+butan-1-ol,water,0.058642,0.0,0.3,LTD
+water,butan-1-ol,3.757405,0.0,0.3,LTD
+ethanol,propan-1-ol,0.9677745413421085,0.0,0.3,LTD
+propan-1-ol,ethanol,-0.7148939457119348,0.0,0.3,LTD
+ethanol,propan-2-ol,0.4885523176901194,0.0,0.3,LTD
+propan-2-ol,ethanol,-0.45327375938885966,0.0,0.3,LTD
+butan-1-ol,propan-2-ol,-0.412465,0.0,0.3,LTD
+propan-2-ol,butan-1-ol,0.463491,0.0,0.3,LTD
+methanol,propan-1-ol,0.09871306398034273,0.0,0.3,LTD
+propan-1-ol,methanol,-0.057733124007927454,0.0,0.3,LTD
+butan-1-ol,methanol,0.632292778,0.0,0.3,LTD
+methanol,butan-1-ol,-0.460382816,0.0,0.3,LTD
+propan-2-ol,water,-0.104562,0.0,0.3,LTD
+water,propan-2-ol,2.746073,0.0,0.3,LTD
+methanol,water,-0.268282536,0.0,0.30,DDB isobaric VLE 101.3 kPa; 557 of 625 pts in 40 of 41 data sets; 337.4-371.1 K; alpha=0.30; rms(lngamma)=0.0299
+water,methanol,1.122303484,0.0,0.30,DDB isobaric VLE 101.3 kPa; 557 of 625 pts in 40 of 41 data sets; 337.4-371.1 K; alpha=0.30; rms(lngamma)=0.0299
+ethanol,water,-0.1163907139,0.0,0.30,DDB isobaric VLE 101.3 kPa; 925 of 1059 pts in 63 of 64 data sets; 347.6-372.5 K; alpha=0.30; rms(lngamma)=0.0221
+water,ethanol,1.804103902,0.0,0.30,DDB isobaric VLE 101.3 kPa; 925 of 1059 pts in 63 of 64 data sets; 347.6-372.5 K; alpha=0.30; rms(lngamma)=0.0221
+acetone,water,0.6064665607,0.0,0.30,DDB isobaric VLE 101.3 kPa; 300 of 330 pts in 26 of 26 data sets; 329.2-373.1 K; alpha=0.30; rms(lngamma)=0.0512
+water,acetone,1.654602269,0.0,0.30,DDB isobaric VLE 101.3 kPa; 300 of 330 pts in 26 of 26 data sets; 329.2-373.1 K; alpha=0.30; rms(lngamma)=0.0512
+methanol,propan-2-ol,0.2445974895,0.0,0.30,DDB isobaric VLE 101.3 kPa; 133 of 138 pts in 10 of 10 data sets; 338.2-354.9 K; alpha=0.30; rms(lngamma)=0.0766
+propan-2-ol,methanol,-0.2533860075,0.0,0.30,DDB isobaric VLE 101.3 kPa; 133 of 138 pts in 10 of 10 data sets; 338.2-354.9 K; alpha=0.30; rms(lngamma)=0.0766
+acetone,ethanol,0.1433098513,0.0,0.30,DDB isobaric VLE 101.3 kPa; 174 of 174 pts in 15 of 15 data sets; 329.7-350.1 K; alpha=0.30; rms(lngamma)=0.0504
+ethanol,acetone,0.4760473778,0.0,0.30,DDB isobaric VLE 101.3 kPa; 174 of 174 pts in 15 of 15 data sets; 329.7-350.1 K; alpha=0.30; rms(lngamma)=0.0504
+acetone,propan-2-ol,0.6571204146,0.0,0.30,DDB isobaric VLE 101.3 kPa; 74 of 80 pts in 7 of 7 data sets; 329.9-353.5 K; alpha=0.30; rms(lngamma)=0.0385
+propan-2-ol,acetone,-0.05008774821,0.0,0.30,DDB isobaric VLE 101.3 kPa; 74 of 80 pts in 7 of 7 data sets; 329.9-353.5 K; alpha=0.30; rms(lngamma)=0.0385
+butan-1-ol,ethanol,-0.8033204146,0.0,0.30,DDB isobaric VLE 101.3 kPa; 123 of 153 pts in 10 of 10 data sets; 351.8-388.1 K; alpha=0.30; rms(lngamma)=0.0388
+ethanol,butan-1-ol,1.170112436,0.0,0.30,DDB isobaric VLE 101.3 kPa; 123 of 153 pts in 10 of 10 data sets; 351.8-388.1 K; alpha=0.30; rms(lngamma)=0.0388

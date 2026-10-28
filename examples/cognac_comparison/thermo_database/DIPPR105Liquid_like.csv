@@ -1,0 +1,9 @@
+Clapeyron Database File,,,,,,,,,,
+DIPPR 105 Like Parameters for liquid volume,,,,,,,,,,
+species,A,B,C,D,Tmin,Tmax,source
+water,9872.6275,0.39053924,647.096,0.28571429,273.00,507.00,DDB sat. liquid density 27 of 28 pts 273.1-506.1 K (joint fit with DIPPR101Sat_like.csv); D fixed
+methanol,3337.8228,0.32561221,512.500,0.28571429,253.00,404.00,DDB sat. liquid density 62 of 62 pts 253.2-403.1 K (joint fit with DIPPR101Sat_like.csv); D fixed
+ethanol,2548.2868,0.34393751,514.000,0.28571429,263.00,410.00,DDB sat. liquid density 30 of 33 pts 263.1-409.2 K (joint fit with DIPPR101Sat_like.csv); D fixed
+butan-1-ol,1303.2484,0.30894798,563.050,0.28571429,260.00,449.00,DDB sat. liquid density 42 of 47 pts 260.0-448.1 K (joint fit with DIPPR101Sat_like.csv); D fixed
+propan-2-ol,1920.7286,0.34090512,508.300,0.28571429,273.00,400.00,DDB sat. liquid density 28 of 29 pts 273.1-400.0 K (joint fit with DIPPR101Sat_like.csv); D fixed
+acetone,1206.903,0.25677926,508.200,0.28571429,273.00,406.00,DDB sat. liquid density 22 of 23 pts 273.1-405.6 K (joint fit with DIPPR101Sat_like.csv); D fixed

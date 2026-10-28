@@ -1,0 +1,9 @@
+Clapeyron Database File,,,,,,,,,,
+Tsonopoulos Virial Like Parameters,,,,,,,,,,
+species,Tc,Pc,acentricfactor,Mw,source
+water,647.096,22064000,0.47227634,18.015,Tc: fit_pures.jl; Pc: DDB median; Mw: Clapeyron; acentricfactor effective - fitted to DDB gas density 456 of 508 pts / B 13 of 13 pts / Clausius hvap 402 of 487 pts
+methanol,512.500,8093800,1.2936387,32.042,Tc: fit_pures.jl; Pc: DDB median; Mw: Clapeyron; acentricfactor effective - fitted to DDB gas density 60 of 61 pts / B 69 of 73 pts / Clausius hvap 105 of 123 pts
+ethanol,514.000,6254000,1.2235052,46.069,Tc: fit_pures.jl; Pc: DDB median; Mw: Clapeyron; acentricfactor effective - fitted to DDB gas density 250 of 252 pts / B 40 of 40 pts / Clausius hvap 53 of 104 pts
+butan-1-ol,563.050,4413700,0.49158717,74.123,Tc: fit_pures.jl; Pc: DDB median; Mw: Clapeyron; acentricfactor effective - fitted to DDB gas density 5 of 5 pts / B 4 of 4 pts / Clausius hvap 62 of 67 pts
+propan-2-ol,508.300,4764300,0.85696629,60.096,Tc: fit_pures.jl; Pc: DDB median; Mw: Clapeyron; acentricfactor effective - fitted to DDB gas density 47 of 55 pts / B 12 of 12 pts / Clausius hvap 47 of 50 pts
+acetone,508.200,4711375,0.77201528,58.080,Tc: fit_pures.jl; Pc: DDB median; Mw: Clapeyron; acentricfactor effective - fitted to DDB gas density 85 of 120 pts / B 48 of 51 pts / Clausius hvap 69 of 71 pts
