@@ -31,20 +31,20 @@ mixtures = [
                 n_charge = 1485. / (PR(components_5comp).params.Mw.values' * x0_5comp), tmax = 4000., Q = 350., PS = 50000.0, ϵ = 0.50),
 ]
 
-# plant-specific parameters (Section 3.4.1)
+# plant-specific parameters
 N_stages = 12
 H_col    = 1.5                     # m, packed height -> per-stage height h/(S-1)
-ΔT       = 20.0                    # K, head-to-condenser offset (eq. 7)
+ΔT       = 20.0                    # K, head-to-condenser offset
 ΔP       = 93.0                    # Pa, total pressure drop
 nB       = 3.3                     # mol, buffer holdup n^B
 Tref     = 273.15                  # K
 cp_steel = 510.79                  # J/(kg K), structured packing 1.4404
 cp_glass = 830.0                   # J/(kg K), borosilicate glass
-# masses and correction factors c^j (eq. 8): reboiler vessel vs. column stages
+# masses and correction factors c^j: reboiler vessel vs. column stages
 m_steel  = j -> j == 1 ? 0.25  : 0.058
 m_glass  = j -> j == 1 ? 1.25  : 0.20
 c_corr   = j -> j == 1 ? 1.0   : 2.5
-U_mat    = j -> (T -> c_corr(j) * (m_steel(j)*cp_steel + m_glass(j)*cp_glass) * (T - Tref))   # eq. 1 / S26
+U_mat    = j -> (T -> c_corr(j) * (m_steel(j)*cp_steel + m_glass(j)*cp_glass) * (T - Tref))
 Q_loss   = j -> j == N_stages ? (T -> -2.0) : (T -> zero(T))
 UA_mat   = j -> j == 1 ? 150.0 : 30.0
 
@@ -57,7 +57,7 @@ results = []
         saturation=DIPPR101Sat,  saturation_userlocations=["$(path_thermo)/DIPPR101Sat_like.csv"],
         gas=TsonopoulosVirial, gas_userlocations=["$(path_thermo)/TsonopoulosVirial_like.csv"],
     )
-    P_stage = j -> PS + (N_stages - j) * ΔP / (N_stages - 1)   # eq. 3, j = 1 (reboiler) .. S (head)
+    P_stage = j -> PS + (N_stages - j) * ΔP / (N_stages - 1)
 
     for (name, f_model) in models
         model = f_model(components, pures)
@@ -84,7 +84,7 @@ results = []
         run_solve(prob) = solve(prob, FBDF(; autodiff); callback=dryout, abstol, reltol, dtmax, maxiters)
 
         run_solve(remake(prob; tspan = (0.0, dtmax)))   # precompilation
-        time_solve = @elapsed sol = run_solve(prob)
+        time_solve = @elapsed sol = run_solve(prob)     # run
         time_per_step = time_solve / length(sol.t)
         @printf("%s | %-20s %-10s t_end = %6.0f s, solve = %8.3f s, %.2e s/step\n", mix, name, sol.retcode, sol.t[end], time_solve, time_per_step)
         flush(stdout)
@@ -94,4 +94,4 @@ results = []
             x_buf = [sol[col.cond.xB[j]] for j in eachindex(components)]))
     end
 end
-@printf("---------------------------------------------------------------\nFinished!")
+@printf("%s\nFinished!", "-"^93)
