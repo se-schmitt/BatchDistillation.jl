@@ -5,6 +5,7 @@ const ForwardDiff = Clapeyron.ForwardDiff
 _safez(xs::Vararg) = (v = map(_clip, collect(xs)); v ./ sum(v))
 
 _pure_models(m) = hasproperty(m, :puremodel) ? m.puremodel.pure :
+                  hasproperty(m, :pure)      ? m.pure :
                   hasproperty(m, :vle)       ? _pure_models(m.vle) :
                   hasproperty(m, :fluid)     ? _pure_models(m.fluid) : nothing
 
@@ -28,10 +29,29 @@ end
 
 # bubble_temperature with initial guess
 function _bubbleT(fluid, p, z)
-    T0 = _T0_guess(fluid, p, z)
-    return isnothing(T0) ? bubble_temperature(fluid, p, z) :
-                           bubble_temperature(fluid, p, z; T0 = T0)
+    K = Tuple{typeof(fluid), typeof(p), Vector{eltype(z)}}
+    caches = get!(IdDict{Type,Any}, task_local_storage(), :_bubbleT_cache)::IdDict{Type,Any}
+    return _bubbleT(get!(Vector{Tuple{K,Any}}, caches, K)::Vector{Tuple{K,Any}}, fluid, p, z)
 end
+
+function _bubbleT(cache::Vector, fluid, p, z)
+    for i in length(cache):-1:1
+        (fc, pc, zc), res = cache[i]
+        pc === p && length(zc) == length(z) && all(map(===, zc, z)) && fc === fluid && return res
+    end
+    T0 = _T0_guess(fluid, p, z)
+    res = isnothing(T0) ? bubble_temperature(fluid, p, z) :
+                          bubble_temperature(fluid, p, z; T0 = T0)
+    # near azeotropes (x ≈ y) FugBubbleTemperature mistakes the solution for the trivial one
+    isnan(res[1]) && (res = bubble_temperature(fluid, p, z, FugBubbleTemperature(; T0, tol_y = 1e-12)))
+    length(cache) ≥ 256 && popfirst!(cache)
+    push!(cache, ((fluid, p, copy(z)), res))
+    return res
+end
+
+# d(T, y...)/dx as one Jacobian
+_bubble_jac(fluid, p, xs...) =
+    ForwardDiff.jacobian(v -> (r = _bubbleT(fluid, p, _safez(v...)); [r[1]; r[4]]), collect(float.(xs)))
 
 function _ph_flash(fluid, p, h, n)
     z = n ./ sum(n)
@@ -95,8 +115,7 @@ for N in 2:5
     for i in 1:N
         d = Symbol(bT, :_dx, i)
         @eval begin
-            $d(fluid, p, $(xs...)) =
-                ForwardDiff.derivative(ξ -> $bT(fluid, p, $(xs[1:i-1]...), ξ, $(xs[i+1:N]...)), $(xs[i]))
+            $d(fluid, p, $(xs...)) = _bubble_jac(fluid, p, $(xs...))[1, $i]
             @register_symbolic $d(fluid::Clapeyron.EoSModel, p, $(xs...))
             @register_derivative $bT(fluid, p, $(xs...)) $(2 + i) $d(fluid, p, $(xs...))
         end
@@ -111,8 +130,7 @@ for N in 2:5
         for i in 1:N
             d = Symbol(bY, :_dx, i)
             @eval begin
-                $d(fluid, p, $(xs...)) =
-                    ForwardDiff.derivative(ξ -> $bY(fluid, p, $(xs[1:i-1]...), ξ, $(xs[i+1:N]...)), $(xs[i]))
+                $d(fluid, p, $(xs...)) = _bubble_jac(fluid, p, $(xs...))[$(1 + k), $i]
                 @register_symbolic $d(fluid::Clapeyron.EoSModel, p, $(xs...))
                 @register_derivative $bY(fluid, p, $(xs...)) $(2 + i) $d(fluid, p, $(xs...))
             end

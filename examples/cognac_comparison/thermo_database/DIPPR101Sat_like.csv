@@ -1,0 +1,9 @@
+Clapeyron Database File,,,,,,,,,,
+DIPPR 101 Like Parameters for saturation pressure,,,,,,,,,,
+species,Tc,Pc,A,B,C,D,E,Tmin,Tmax,source
+water,647.096,22064000,68.96418939,-7080.165754,-6.57320092,3.318858062e-06,2.0,258.00,515.00,Tc: fit_pures.jl; Pc: DDB median; DDB VLE psat 3669 of 5190 pts + Clausius hvap 402 of 487 pts 273.1-513.1 K (joint fit with DIPPR105Liquid_like.csv and TsonopoulosVirial_like.csv)
+methanol,512.500,8093800,57.44254221,-5962.754165,-4.896144017,2.14048117e-06,2.0,251.00,410.00,Tc: fit_pures.jl; Pc: DDB median; DDB VLE psat 2118 of 2395 pts + Clausius hvap 105 of 123 pts 258.0-403.1 K (joint fit with DIPPR105Liquid_like.csv and TsonopoulosVirial_like.csv)
+ethanol,514.000,6254000,59.59131129,-6626.573504,-4.983229747,3.936523224e-19,6.0,252.00,412.00,Tc: fit_pures.jl; Pc: DDB median; DDB VLE psat 2278 of 2997 pts + Clausius hvap 53 of 104 pts 256.0-403.1 K (joint fit with DIPPR105Liquid_like.csv and TsonopoulosVirial_like.csv)
+butan-1-ol,563.050,4413700,50.85276965,-7641.196872,-3.102111145,-8.226768499e-06,2.0,253.00,449.00,Tc: fit_pures.jl; Pc: DDB median; DDB VLE psat 1668 of 1828 pts + Clausius hvap 62 of 67 pts 293.1-445.6 K (joint fit with DIPPR105Liquid_like.csv and TsonopoulosVirial_like.csv)
+propan-2-ol,508.300,4764300,32.75074251,-6165.414426,-0.4287063015,-1.074955729e-05,2.0,262.00,407.00,Tc: fit_pures.jl; Pc: DDB median; DDB VLE psat 1332 of 1423 pts + Clausius hvap 47 of 50 pts 288.0-403.4 K (joint fit with DIPPR105Liquid_like.csv and TsonopoulosVirial_like.csv)
+acetone,508.200,4711375,76.40816904,-5933.867104,-8.214291552,6.981688883e-06,2.0,252.00,406.00,Tc: fit_pures.jl; Pc: DDB median; DDB VLE psat 1163 of 1236 pts + Clausius hvap 69 of 71 pts 253.0-398.2 K (joint fit with DIPPR105Liquid_like.csv and TsonopoulosVirial_like.csv)
